@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Frete - Telles Transportes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .campo { margin-bottom: 10px; }
+        label { display: inline-block; width: 80px; }
+        button { margin-top: 10px; padding: 5px 10px; }
+        #resultado { margin-top: 15px; font-weight: bold; color: green; }
+    </style>
+</head>
+<body>
+
+    <h2>Cálculo de Frete</h2>
+    
+    <div class="campo">
+        <label>Peso (kg):</label>
+        <input type="number" id="peso" value="10">
+    </div>
+    
+    <div class="campo">
+        <label>Distância:</label>
+        <input type="number" id="distancia" value="100">
+    </div>
+    
+    <div class="campo">
+        <label>Volume:</label>
+        <input type="number" id="volume" value="2">
+    </div>
+
+    <button onclick="calcular()">Calcular Frete</button>
+
+    <div id="resultado"></div>
+
+    <script>
+        function calcular() {
+            // Definição das variáveis
+            let peso = parseFloat(document.getElementById('peso').value);
+            let distancia = parseFloat(document.getElementById('distancia').value);
+            let volume = parseFloat(document.getElementById('volume').value);
+            
+            // Fórmula do frete
+            let frete = 15 + (2 * peso) + (0.05 * distancia) + (10 * volume);
+            
+            // Exibição do resultado
+            document.getElementById('resultado').innerText = "O valor do frete é: R$ " + frete.toFixed(2);
+        }
+        
+        // Execução automática inicial (Caso de teste padrão)
+        calcular();
+    </script>
+
+</body>
+</html>

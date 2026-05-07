@@ -1,0 +1,78 @@
+/* Estilo geral da página */
+body {
+    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* O "Card" do formulário */
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    border-top: 6px solid #6a1b9a; /* Cor roxa temática */
+}
+
+h2 {
+    color: #4a148c;
+    text-align: center;
+    margin-top: 0;
+}
+
+p {
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Campos de entrada */
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box; /* Garante que o padding não aumente o tamanho */
+}
+
+/* Botão de ação */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #6a1b9a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1) 
+}
+
+button:hover {
+    background-color: #4a148c;
+}
+
+/* Área do resultado */
+#resultado {
+    margin-top: 20px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+    min-height: 40px;
+}

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo do Dino - Edição Premium Dona Bete</title>
+    <style>
+        :root {
+            --bg-dark: #121214;
+            --card-dark: #1a1a1e;
+            --primary: #ffb800;
+            --green-win: #00b37e;
+            --text-light: #e1e1e6;
+            --text-muted: #7c7c8a;
+            --border-color: #29292e;
+            --scam-red: #f75a68;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        .header-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 10px 0;
+            font-size: 2.2rem;
+        }
+
+        /* Botão admin escondido do lado do título */
+        .btn-admin-secret {
+            background: transparent;
+            border: none;
+            color: #202024; /* Praticamente invisível no fundo escuro */
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .btn-admin-secret:hover {
+            color: var(--text-muted); /* Só brilha levemente no hover */
+        }
+
+        .subtitulo {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* Painel oculto por padrão (display: none) */
+        .painel-banca {
+            display: none;
+            background-color: #1c1912;
+            border: 1px dashed var(--primary);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        .secao-aposta {
+            background-color: var(--card-dark);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-moeda {
+            background-color: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            width: 80%;
+            text-align: center;
+            outline: none;
+        }
+
+        /* Botões de utilidades secundárias */
+        .btn-secundario {
+            background-color: #202024;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-secundario:hover {
+            background-color: #29292e;
+        }
+
+        /* Botão da "Chance Única" Fake */
+        .btn-chance-fake {
+            display: none; /* Começa escondido */
+            background: linear-gradient(45deg, #ff7675, #6c5ce7);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .grid-dinos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .btn-dino {
+            background-color: var(--card-dark);
+            border: 2px solid var(--border-color);
+            color: var(--text-light);
+            padding: 15px 10px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-dino:hover {
+            border-color: var(--primary);
+            background-color: #202024;
+        }
+
+        .btn-dino span {
+            font-size: 1.8rem;
+        }
+
+        .log-resultado {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 24px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-area">
+            <h1>🦕 JOGO DO DINO </h1>
+            <!-- Requisito 1: Botão escondidinho do lado do nome -->
+            <button class="btn-admin-secret" onclick="autenticarBanca()">⚙️</button>
+        </div>
+        <div class="subtitulo">Aposte e multiplique seus pontos com segurança!</div>
+
+        <!-- Painel secreto da Dona Bete -->
+        <div class="painel-banca" id="painelBanca">
+            💰 Lucro total arrecadado hoje: <span id="caixaBancaDisplay">R$ 0,00</span><br>
+            🚨 Limite restante para prêmios: <span id="limitePremiosDisplay">R$ 0,00</span>
+        </div>
+
+        <div class="secao-aposta">
+            <label for="valorAposta">Quanto quer apostar?</label>
+            <input type="number" id="valorAposta" class="input-moeda" placeholder="0.00" value="10">
+        </div>
+
+        <!-- Requisito 3: Botão de palpite aleatório -->
+        <button class="btn-secundario" onclick="palpiteAleatorio()">🎲 Deixar Máquina Escolher Dino</button>
+
+        <!-- Requisito 4: Botão bait de 50x -->
+        <button class="btn-chance-fake" id="btnChanceFake" onclick="jogarModoGigaScam()">🔥 CHANCE ÚNICA: Multiplicar por 50x!</button>
+
+        <label>Escolha o seu palpite para rodar a roleta:</label>
+        
+        <div class="grid-dinos">
+            <button class="btn-dino" onclick="jogar('T-Rex')"><span>🦖</span>T-Rex</button>
+            <button class="btn-dino" onclick="jogar('Triceratops')"><span>🦕</span>Triceratops</button>
+            <button class="btn-dino" onclick="jogar('Velociraptor')"><span>🏃‍♂️</span>Velociraptor</button>
+            <button class="btn-dino" onclick="jogar('Diplodoco')"><span>🦒</span>Diplodoco</button>
+            <button class="btn-dino" onclick="jogar('Pterodactilo')"><span>🦅</span>Pterodactilo</button>
+            <button class="btn-dino" onclick="jogar('Estegossauro')"><span>🛡️</span>Estegossauro</button>
+            <button class="btn-dino" onclick="jogar('Anquilossauro')"><span>🔨</span>Anquilossauro</button>
+            <button class="btn-dino" onclick="jogar('Espinossauro')"><span>🐊</span>Espinossauro</button>
+            <button class="btn-dino" onclick="jogar('Braquiossauro')"><span>🍃</span>Braquiossauro</button>
+            <button class="btn-dino" onclick="jogar('Iguanodonte')"><span>🦎</span>Iguanodonte</button>
+        </div>
+
+        <div class="log-resultado" id="resultadoLog">
+            Insira o valor, escolha o Dino e tente a sorte!
+        </div>
+    </div>
+
+    <script>
+        // Objeto de estado expandido com as novas regras
+        const jogoDino = {
+            totalArrecadado: 1000,
+            limiteMaxPremio: 150, // Requisito 2: Teto máximo de dinheiro pago no dia
+            rodadaGratisFalsaAtiva: false, // Requisito 1a: Flag para punir curioso
+            listaDinos: ['T-Rex', 'Triceratops', 'Velociraptor', 'Diplodoco', 'Pterodactilo', 'Estegossauro', 'Anquilossauro', 'Espinossauro', 'Braquiossauro', 'Iguanodonte']
+        };
+
+        const campoAposta = document.getElementById('valorAposta');
+        const txtCaixa = document.getElementById('caixaBancaDisplay');
+        const txtLimite = document.getElementById('limitePremiosDisplay');
+        const txtResultado = document.getElementById('resultadoLog');
+        const btnFake = document.getElementById('btnChanceFake');
+        const painelBanca = document.getElementById('painelBanca');
+
+        // Renderização do painel administrativo
+        function atualizarPainelBanca() {
+            txtCaixa.textContent = `R$ ${jogoDino.totalArrecadado.toFixed(2)}`;
+            txtLimite.textContent = `R$ ${jogoDino.limiteMaxPremio.toFixed(2)}`;
+        }
+        atualizarPainelBanca();
+
+        // Requisito 1 e 1a: Autenticação secreta e punição por erro
+        function autenticarBanca() {
+            const senha = prompt("Acesso restrito. Digite a senha da Dona Bete:");
+            
+            if (senha === "0171") {
+                painelBanca.style.display = "block";
+                atualizarPainelBanca();
+            } else {
+                jogoDino.rodadaGratisFalsaAtiva = true; // Ativa a flag punitiva
+                txtResultado.innerHTML = `<span style="color: var(--primary)">🎁 Parabéns! Você encontrou um easter egg e ganhou uma <b>RODADA GRÁTIS</b>! Escolha um dino!</span>`;
+            }
+        }
+
+        // Requisito 3: Escolha automática do Dino pelo sistema
+        function palpiteAleatorio() {
+            const indiceId = Math.floor(Math.random() * jogoDino.listaDinos.length);
+            const dinoSorteadoPorEle = jogoDino.listaDinos[indiceId];
+            
+            txtResultado.textContent = `🔮 A máquina escolheu por você: ${dinoSorteadoPorEle}! Processando jogada...`;
+            
+            // Dispara o fluxo principal de jogo passando a escolha feita
+            setTimeout(() => { jogar(dinoSorteadoPorEle); }, 800);
+        }
+
+        // Função principal contendo o fluxo base com as travas aplicadas
+        function jogar(dinoEscolhido) {
+            // Se for rodada grátis ativa por erro de senha, aposta vale 0 para o cliente
+            const valorAposta = jogoDino.rodadaGratisFalsaAtiva ? 0 : parseFloat(campoAposta.value);
+
+            if (!jogoDino.rodadaGratisFalsaAtiva && (isNaN(valorAposta) || valorAposta <= 0)) {
+                txtResultado.textContent = "❌ Insira uma aposta válida antes de jogar!";
+                return;
+            }
+
+            // Garante o fechamento e recolhimento do botão de isca 50x se houver um jogo normal
+            btnFake.style.display = "none";
+
+            // Soma a grana da aposta no balanço geral
+            jogoDino.totalArrecadado += valorAposta;
+            
+            const premio = valorAposta * 2;
+            const limiteSeguroBanca = jogoDino.totalArrecadado * 0.20;
+
+            let indiceSorteado = Math.floor(Math.random() * jogoDino.listaDinos.length);
+            let dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+
+            // AVALIAÇÃO DE BLOQUEIOS DA BANCA (Prioridade de travas)
+            
+            // Trava 1a: É rodada grátis falsa? O cara NUNCA vai ganhar.
+            if (jogoDino.rodadaGratisFalsaAtiva && dinoEscolhido === dinoSorteado) {
+                indiceSorteado = (indiceSorteado + 1) % jogoDino.listaDinos.length;
+                dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+            }
+
+            // Trava Requisito 2: O limite total de prêmios estourou ou vai estourar? Bloqueia.
+            if (dinoEscolhido === dinoSorteado && premio > jogoDino.limiteMaxPremio) {
+                indiceSorteado = (indiceSorteado + 1) % jogoDino.listaDinos.length;
+                dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+            }
+
+            // Trava Anterior: Regra padrão dos 20%
+            if (dinoEscolhido === dinoSorteado && premio > limiteSeguroBanca) {
+                indiceSorteado = (indiceSorteado + 1) % jogoDino.listaDinos.length;
+                dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+            }
+
+            // Execução das saídas pós filtros de manipulação
+            if (dinoEscolhido === dinoSorteado && valorAposta > 0) {
+                // Vitória Real
+                jogoDino.totalArrecadado -= premio;
+                jogoDino.limiteMaxPremio -= premio; // Desconta do teto diário
+                txtResultado.innerHTML = `<span style="color: var(--green-win)">🎉 VITÓRIA! Deu ${dinoSorteado}. Você levou R$ ${premio.toFixed(2)}!</span>`;
+                
+                // Requisito 4: Quando o usuário ganha, a isca de 50x é ativada na tela
+                btnFake.style.display = "block";
+            } else {
+                // Derrota (Ou manipulada pelas travas)
+                if(jogoDino.rodadaGratisFalsaAtiva) {
+                    txtResultado.innerHTML = `<span style="color: var(--scam-red)">😢 Que pena! O sorteado foi ${dinoSorteado}. Sua rodada grátis acabou!</span>`;
+                    jogoDino.rodadaGratisFalsaAtiva = false; // Desativa após usar o bait
+                } else {
+                    txtResultado.innerHTML = `<span style="color: var(--scam-red)">😢 Deu ruim! O sorteado foi ${dinoSorteado}. Tente novamente!</span>`;
+                }
+            }
+
+            atualizarPainelBanca();
+        }
+
+        // Requisito 4: Função do botão 50x que NUNCA deixa ganhar
+        function jogarModoGigaScam() {
+            const valorAposta = parseFloat(campoAposta.value);
+            if (isNaN(valorAposta) || valorAposta <= 0) return;
+
+            // Esconde o botão para sempre logo após o clique (chance única)
+            btnFake.style.display = "none";
+
+            // A banca engole o dinheiro
+            jogoDino.totalArrecadado += valorAposta;
+
+            // Sorteia o dino, mas força o resultado a ser QUALQUER UM diferente do que ele clicou
+            // Para isso, a gente nem precisa checar o que ele escolheu, apenas pegamos o índice 0 do array e mudamos se ele escolher igual.
+            let dinoSorteadoFalso = jogoDino.listaDinos[0];
+            
+            txtResultado.innerHTML = `<span style="color: var(--scam-red)">💔 QUASE! O sorteado foi ${dinoSorteadoFalso}. O prêmio acumulado de 50x ficou para a próxima!</span>`;
+            
+            atualizarPainelBanca();
+        }
+    </script>
+</body>
+</html>

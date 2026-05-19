@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançador de Dados - Dona Bete</title>
+    <style>
+        /* Variáveis para manter o código limpo e fácil de refatorar */
+        :root {
+            --bg-main: #121214;
+            --bg-card: #202024;
+            --primary: #00b37e;
+            --text: #e1e1e6;
+            --text-support: #8d8d99;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .painel {
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            width: 300px;
+        }
+
+        .resultado-total {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .grid-dados {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 360px;
+        }
+
+        .btn-dado {
+            background-color: var(--bg-card);
+            color: var(--text);
+            border: 2px solid #29292e;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-dado:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .btn-reset {
+            margin-top: 25px;
+            background: transparent;
+            color: #f75a68;
+            border: 1px solid #f75a68;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-reset:hover {
+            background-color: #f75a68;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="painel">
+        <span style="color: var(--text-support);">TOTAL ACUMULADO</span>
+        <div class="resultado-total" id="totalDisplay">0</div>
+        <small id="logDisplay" style="color: var(--text-support);">Clique em um dado para rolar</small>
+    </div>
+
+    <!-- Grid com os botões dos dados passando o número de lados via argumento -->
+    <div class="grid-dados">
+        <button class="btn-dado" onclick="rolarDado(4)">D4</button>
+        <button class="btn-dado" onclick="rolarDado(6)">D6</button>
+        <button class="btn-dado" onclick="rolarDado(8)">D8</button>
+        <button class="btn-dado" onclick="rolarDado(10)">D10</button>
+        <button class="btn-dado" onclick="rolarDado(12)">D12</button>
+        <button class="btn-dado" onclick="rolarDado(20)">D20</button>
+    </div>
+
+    <button class="btn-reset" onclick="zerarPontuacao()">Zerar Placar</button>
+
+    <script>
+        // Escopo global para controlar a pontuação acumulada
+        let pontuacaoTotal = 0;
+
+        // Seleção dos elementos do DOM que vão sofrer mutação
+        const totalDisplay = document.getElementById('totalDisplay');
+        const logDisplay = document.getElementById('logDisplay');
+
+        function rolarDado(lados) {
+            // Lógica do sorteio: Math.random gera entre 0 e 0.999...
+            // Multiplicando pelos lados e arredondando para baixo com Math.floor, depois somando 1
+            const resultado = Math.floor(Math.random() * lados) + 1;
+            
+            // Atualiza o estado da aplicação
+            pontuacaoTotal += resultado;
+            
+            // Renderiza as mudanças na tela
+            totalDisplay.textContent = pontuacaoTotal;
+            logDisplay.textContent = `Você rolou 1D${lados} e tirou: ${resultado}`;
+        }
+
+        function zerarPontuacao() {
+            pontuacaoTotal = 0;
+            totalDisplay.textContent = 0;
+            logDisplay.textContent = "Placar zerado!";
+        }
+    </script>
+</body>
+</html>

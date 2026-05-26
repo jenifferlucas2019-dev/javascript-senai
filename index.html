@@ -1,25 +1,237 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <!-- <link rel="stylesheet" href="style2.css"> -->
-    <title>CSS</title>
+    <title>Jogo do Dino - Dona Bete</title>
+    <style>
+        /* Variáveis de cores para o visual dark de apostas */
+        :root {
+            --bg-dark: #121214;
+            --card-dark: #1a1a1e;
+            --primary: #ffb800; /* Amarelo ouro para destacar */
+            --green-win: #00b37e;
+            --text-light: #e1e1e6;
+            --text-muted: #7c7c8a;
+            --border-color: #29292e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 2.2rem;
+        }
+
+        .subtitulo {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* Painel do Caixa Oculto da Banca (Dona Bete controlando) */
+        .painel-banca {
+            background-color: #1c1912;
+            border: 1px dashed var(--primary);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        /* Área de inserção de moedas/apostas */
+        .secao-aposta {
+            background-color: var(--card-dark);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-moeda {
+            background-color: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            width: 80%;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-moeda:focus {
+            border-color: var(--primary);
+        }
+
+        /* Grid dos 10 Dinossauros */
+        .grid-dinos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .btn-dino {
+            background-color: var(--card-dark);
+            border: 2px solid var(--border-color);
+            color: var(--text-light);
+            padding: 15px 10px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-dino:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            background-color: #202024;
+        }
+
+        .btn-dino span {
+            font-size: 1.8rem;
+        }
+
+        /* Feedbacks de Resultados */
+        .log-resultado {
+            background-color: var(--card-dark);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 24px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
-    <h1>Spoilers de CSS e outras coisas...</h1>
-    <h2>Vamos brincar com CSS</h2>
-    <hr>
-    <button onclick="calcularParImpar()">par/impar</button>
-    <button onclick="mostrarDiaDaSemana()">Dia da semana</button>
-    <button onclick="adivinharNumero()">Adivinhação</button>
-    <button onclick="verificarIdade()">Idade</button>
-    <button onclick="calcularPrecoBrique()">Romero Brique</button>
-    <button onclick="calcularChances()">Monika</button>
-    <button onclick="">Outro exercício</button>
-    <button onclick="verificarProvisoes()">Prov Cap Ganso</button>
-    <output id="resultado">Reservado para o resultado</output>
-    <script src="script.js"></script>
+
+    <div class="container">
+        <h1>🦕 JOGO DO DINO 🦖</h1>
+        <div class="subtitulo">Escolha seu dinossauro e multiplique seus pontos!</div>
+
+        <!-- Painel interno da banca para o desenvolvedor testar -->
+        <div class="painel-banca">
+            ⚙️ Caixa interno arrecadado: <span id="caixaBancaDisplay">R$ 0,00</span>
+        </div>
+
+        <!-- Área do valor do palpite -->
+        <div class="secao-aposta">
+            <label for="valorAposta">Quanto quer apostar?</label>
+            <input type="number" id="valorAposta" class="input-moeda" placeholder="0.00" min="1" step="any" value="10">
+        </div>
+
+        <label>Escolha o seu palpite para rodar a roleta:</label>
+        
+        <!-- Grid contendo as 10 opções de botões com os dinos -->
+        <div class="grid-dinos">
+            <button class="btn-dino" onclick="jogar('T-Rex')"><span>🦖</span>T-Rex</button>
+            <button class="btn-dino" onclick="jogar('Triceratops')"><span>🦕</span>Triceratops</button>
+            <button class="btn-dino" onclick="jogar('Velociraptor')"><span>🏃‍♂️</span>Velociraptor</button>
+            <button class="btn-dino" onclick="jogar('Diplodoco')"><span>🦒</span>Diplodoco</button>
+            <button class="btn-dino" onclick="jogar('Pterodactilo')"><span>🦅</span>Pterodactilo</button>
+            <button class="btn-dino" onclick="jogar('Estegossauro')"><span>🛡️</span>Estegossauro</button>
+            <button class="btn-dino" onclick="jogar('Anquilossauro')"><span>🔨</span>Anquilossauro</button>
+            <button class="btn-dino" onclick="jogar('Espinossauro')"><span>🐊</span>Espinossauro</button>
+            <button class="btn-dino" onclick="jogar('Braquiossauro')"><span>🍃</span>Braquiossauro</button>
+            <button class="btn-dino" onclick="jogar('Iguanodonte')"><span>🦎</span>Iguanodonte</button>
+        </div>
+
+        <!-- Painel que exibe a resposta se ganhou ou perdeu -->
+        <div class="log-resultado" id="resultadoLog">
+            Insira o valor, clique em um dinossauro e boa sorte!
+        </div>
+    </div>
+
+    <!-- Script contendo a lógica de negócio controlada -->
+    <script>
+        // Objeto de controle de estado
+        const jogoDino = {
+            totalArrecadado: 1000, // Caixa inicial da Dona Bete
+            listaDinos: ['T-Rex', 'Triceratops', 'Velociraptor', 'Diplodoco', 'Pterodactilo', 'Estegossauro', 'Anquilossauro', 'Espinossauro', 'Braquiossauro', 'Iguanodonte']
+        };
+
+        // Cache de elementos do DOM
+        const campoAposta = document.getElementById('valorAposta');
+        const txtCaixa = document.getElementById('caixaBancaDisplay');
+        const txtResultado = document.getElementById('resultadoLog');
+
+        // Atualização do valor na tela inicial
+        txtCaixa.textContent = `R$ ${jogoDino.totalArrecadado.toFixed(2)}`;
+
+        function jogar(dinoEscolhido) {
+            const valorAposta = parseFloat(campoAposta.value);
+
+            // Validação de entrada
+            if (isNaN(valorAposta) || valorAposta <= 0) {
+                txtResultado.textContent = "❌ Por favor, digite um valor válido de aposta!";
+                return;
+            }
+
+            // 1. Entrada de capital imediata no saldo arrecadado
+            jogoDino.totalArrecadado += valorAposta;
+            
+            // 2. Projeção de prêmio e cálculo da regra de segurança (20% do caixa)
+            const premio = valorAposta * 2;
+            const limiteSeguro = jogoDino.totalArrecadado * 0.20;
+
+            // 3. Sorteio randômico padrão da máquina
+            let indiceSorteado = Math.floor(Math.random() * jogoDino.listaDinos.length);
+            let dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+
+            // 4. Mecanismo de Garantia de Rentabilidade da Dona Bete 🥸
+            if (dinoEscolhido === dinoSorteado && premio > limiteSeguro) {
+                // Manipulação sutil de dados: empurra o índice para o próximo item
+                indiceSorteado = (indiceSorteado + 1) % jogoDino.listaDinos.length;
+                dinoSorteado = jogoDino.listaDinos[indiceSorteado];
+            }
+
+            // 5. Avaliação do resultado após o filtro de segurança
+            if (dinoEscolhido === dinoSorteado) {
+                jogoDino.totalArrecadado -= premio;
+                txtResultado.innerHTML = `<span style="color: var(--green-win)">🎉 Vitória Limpa! O sorteado foi o ${dinoSorteado}. Você faturou R$ ${premio.toFixed(2)}!</span>`;
+            } else {
+                txtResultado.innerHTML = `<span style="color: #f75a68">😢 Deu ruim! O sorteado foi o ${dinoSorteado}. A banca agradece seu palpite!</span>`;
+            }
+
+            // 6. Atualiza o painel financeiro na interface
+            txtCaixa.textContent = `R$ ${jogoDino.totalArrecadado.toFixed(2)}`;
+        }
+    </script>
 </body>
 </html>
